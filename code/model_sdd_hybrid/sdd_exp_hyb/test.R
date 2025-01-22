@@ -1,7 +1,10 @@
 
+suppressMessages({
 
 library(ggplot2)
 library(rstan)
+
+})
 
 # source run settings
 source("../iter.R")
