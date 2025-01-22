@@ -241,11 +241,11 @@ parameters {
     
 	// observation error
 	// per year
-	vector<lower=0, upper=3>[Y] sigma[Q];
+	vector<lower=0>[Y] sigma[Q];
 	
 	// precision and correlation for CAR prior
 	real<lower=0> tau;
-    real<lower=0.1, upper=0.9> rho;
+    real<lower=0.01, upper=0.99> rho;
 }
 transformed parameters {
 
