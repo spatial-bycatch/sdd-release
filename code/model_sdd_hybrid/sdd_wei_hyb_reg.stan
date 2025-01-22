@@ -1,25 +1,10 @@
 // Spatial Density Distribution model
-// CTT Edwards
-// June 2020
 
 functions {
 
 	/*
 	* Return the log probability of a proper conditional autoregressive (CAR) prior 
 	* with a sparse representation for the adjacency matrix
-	*
-	* @author Max Joseph (http://mc-stan.org/users/documentation/case-studies/mbjoseph-CARStan.html)
-	*
-	* @param phi Vector containing the parameters with a CAR prior
-	* @param tau Precision parameter for the CAR prior (real)
-	* @param alpha Dependence (usually spatial) parameter for the CAR prior (real)
-	* @param W_sparse Sparse representation of adjacency matrix (int array)
-	* @param n Length of phi (int)
-	* @param W_pairs Number of adjacent pairs (int)
-	* @param D_sparse Number of neighbours for each location (vector)
-	* @param lambda Eigenvalues of D^{-1/2}*W*D^{-1/2} (vector)
-	*
-	* @return Log probability density of CAR prior up to additive constant
 	*/
 	real sparse_car_lpdf(vector phi, real tau, real alpha, int[,] W_sparse, vector D_sparse, vector lambda, int n, int W_pairs) {
 	
@@ -52,30 +37,6 @@ functions {
 		real lp = sum(a * y + (b - 1) * log1m_exp(y)) + lgamma(a + b) - lgamma(a) - lgamma(b);
         
 		return lp;
-	}
-    
-    // Return p-value increment
-    // breaking ties
-    real p_increment(real x, real y) {
-        real p;
-        if (x == y) {
-            p = 0.5;
-        } else {
-            p = x > y ? 1.0 : 0.0;
-        }
-        return(p);
-    }
-    
-    real calc_sigma_z(real mu, real sigma, int n) {
-            
-        return sqrt(log((exp(square(sigma)) - 1) / n + 1));
-    }
-            
-	real calc_mu_z(real mu, real sigma, int n) {
-	
-		real sigma_z = calc_sigma_z(mu, sigma, n);
-	
-		return log(n) + mu + square(sigma) / 2 - square(sigma_z) / 2;
 	}
 	
 	/*
@@ -271,16 +232,16 @@ parameters {
 	
 	// catchability parameters
     // (encounter rate, efficiency)
-	real<lower=-100,upper=0> pi_log[2, 2];
-    real<lower=   0,upper=1> n[2];
+	real<upper=0> pi_log[2, 2];
+    real<lower=0,upper=100> n[2];
     
 	// observation error
 	// per year
-	vector<lower=0, upper=3>[Y] sigma;
+	vector<lower=0>[Y] sigma;
 	
 	// precision and correlation for CAR prior
 	real<lower=0> tau;
-    real<lower=0.1, upper=0.9> rho;
+    real<lower=0.01, upper=0.99> rho;
 }
 transformed parameters {
 
@@ -388,23 +349,6 @@ generated quantities {
     vector[G] pnzero_hat = rep_vector(0.0, G);
     vector[G] pnzero_sim = rep_vector(0.0, G);
     
-    vector[G] catch_disc[2];
-    vector[G] cpue_disc[2];
-    vector[G] pnzero_disc[2];
-    vector[G] cpua_disc[2];
-    vector[G] density_disc[2];
-    
-    vector[G] catch_mpe;
-    vector[G] cpue_mpe;
-    vector[G] pnzero_mpe;
-    vector[G] cpua_mpe;
-    
-    vector[G] catch_pvalue;
-    vector[G] cpue_pvalue;
-    vector[G] pnzero_pvalue;
-    vector[G] cpua_pvalue;
-    vector[G] density_pvalue;
-    
     vector[G] catch_hat_predict = rep_vector(0.0, G);
    
     real catchability = exp(pi_log[1,2]);
@@ -454,42 +398,6 @@ generated quantities {
             cpua_hat[i] = catch_hat[i] / swa_pg[i];
             cpua_sim[i] = catch_sim[i] / swa_pg[i];
         }
-    }
-        
-    // DISCREPANCIES
-    for (i in 1:G) {
-        
-        catch_disc[1][i] = (catch_emp[i] - catch_hat[i]) / catch_hat[i];
-        catch_disc[2][i] = (catch_sim[i] - catch_hat[i]) / catch_hat[i];
-    
-        cpue_disc[1][i] = (cpue_emp[i] - cpue_hat[i]) / cpue_hat[i];
-        cpue_disc[2][i] = (cpue_sim[i] - cpue_hat[i]) / cpue_hat[i];
-        
-        pnzero_disc[1][i] = (pnzero_emp[i] - pnzero_hat[i]) / pnzero_hat[i];
-        pnzero_disc[2][i] = (pnzero_sim[i] - pnzero_hat[i]) / pnzero_hat[i];
-        
-        cpua_disc[1][i] = (cpua_emp[i] - cpua_hat[i]) / cpua_hat[i];
-        cpua_disc[2][i] = (cpua_sim[i] - cpue_hat[i]) / cpua_hat[i];
-        
-        density_disc[1][i] = (cpua_emp[i] - density_hat[i]) / density_hat[i];
-        density_disc[2][i] = (cpua_sim[i] - density_hat[i]) / density_hat[i];
-    }
-    
-    // MEAN PREDICTION ERRORS
-    for (i in 1:G) {
-        catch_mpe[i]   = pow((catch_hat[i] - catch_emp[i]) / catch_hat[i], 2.0);
-        cpue_mpe[i]    = pow((cpue_hat[i] - cpue_emp[i]) / cpue_hat[i], 2.0);
-        cpua_mpe[i]    = pow((cpua_hat[i] - cpua_emp[i]) / cpua_hat[i], 2.0);
-        pnzero_mpe[i]  = pow((pnzero_hat[i] - pnzero_emp[i]) / pnzero_hat[i], 2.0);
-    }
-        
-    // P-VALUES
-    for (i in 1:G) {
-        catch_pvalue[i]   = p_increment(catch_sim[i], catch_emp[i]);
-        cpue_pvalue[i]    = p_increment(cpue_sim[i], cpue_emp[i]);
-        cpua_pvalue[i]    = p_increment(cpua_sim[i], cpua_emp[i]);
-        pnzero_pvalue[i]  = p_increment(pnzero_sim[i], pnzero_emp[i]);
-        density_pvalue[i] = p_increment(cpua_hat[i], density_hat[i]);
     }
     
     // CATCH PREDICTION
