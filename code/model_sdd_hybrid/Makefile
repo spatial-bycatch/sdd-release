@@ -12,4 +12,13 @@ all:
 			cd ./$(x)/$(y);  Rscript run.R; cd ../..;	\
 			rm ./$(x)/$(y)/run.R;	\
 	))
+	
+test: 
+	$(foreach x,$(MDLS),	\
+		$(foreach y,$(SPPS),	\
+			mkdir -p ./$(x)/$(y);	\
+			cp -f ./$(x)/test.R ./$(x)/$(y)/test.R;	\
+			cd ./$(x)/$(y);  Rscript test.R; cd ../..;	\
+			rm ./$(x)/$(y)/test.R;	\
+	))
 
