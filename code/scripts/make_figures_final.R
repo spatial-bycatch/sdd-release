@@ -97,6 +97,8 @@ ggsave(gg, file = file.path(fig_path, "idd_regression.pdf"), width = 10)
 # PLOT SPATIALLY #
 ##################
 
+stop("not run")
+
 library(spdep)
 source("../../data/grids.R")
 library(nzPlot)
