@@ -6,9 +6,6 @@ library(rstan)
 
 })
 
-# source run settings
-source("../iter.R")
-
 # get model definition
 mdl_def <- strsplit(getwd(), "/")[[1]]
 mdl_def <- mdl_def[(length(mdl_def) - 2):length(mdl_def)]
