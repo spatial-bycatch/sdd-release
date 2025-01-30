@@ -236,11 +236,11 @@ parameters {
 	
 	// catchability parameters
 	real<upper=0> pi_log[Qplus];
-    real<lower=0, upper=100> n[Qplus];
+    real<lower=0> n[Qplus];
     
 	// observation error
 	// per year
-	vector<lower=0>[Y] sigma[Q];
+	vector<lower=0,upper=3>[Y] sigma[Q];
 	
 	// precision and correlation for CAR prior
 	real<lower=0> tau;
@@ -321,9 +321,6 @@ model {
 	// density random effect
 	density_log_is ~ std_normal();
 	density_log_ni ~ sparse_car(tau, rho, W_sparse, d_ni, lambda, G_ni, W_pairs);
-	
-    // observation error
-    sigma_nz ~ std_normal();
     
 	// CAR precision
 	tau ~ gamma(2, 2);
