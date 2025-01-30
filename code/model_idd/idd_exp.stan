@@ -354,6 +354,8 @@ generated quantities {
     
     real catchability[Q] = exp(pi_log[1:Q]);
 	
+	real prior_catchability = exp(pi_log[Qplus]);
+	
     // CATCHES
     {
         real biomass_hat;

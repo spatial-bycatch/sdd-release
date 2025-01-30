@@ -300,10 +300,9 @@ transformed parameters {
 model {
     
     // catchability parameters
-    pi_log[1] ~ log_beta(1.0, 1.0);
-    
-    // reference priors
-    pi_log[2] ~ log_beta(1.0, 1.0);
+	for (i in 1:2) {
+		pi_log[i] ~ log_beta(1.0, 1.0);
+    }
     
     // binomial model
     bin ~ bernoulli(omega);
@@ -349,6 +348,9 @@ generated quantities {
    
     real encounter_rate = exp(pi_log[1,1]);
     real catchability   = exp(pi_log[1,2]);
+	
+	real prior_encounter_rate = exp(pi_log[2,1]);
+    real prior_catchability   = exp(pi_log[2,2]);
 	
     // CATCHES
     {

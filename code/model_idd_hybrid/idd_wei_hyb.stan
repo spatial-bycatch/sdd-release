@@ -362,6 +362,11 @@ generated quantities {
 	real encounter_rate_phi[Q] = n[1:Q,1];
     real catchability_phi[Q]   = n[1:Q,2];
 	
+	real prior_encounter_rate     = exp(pi_log[Qplus,1]);
+    real prior_catchability       = exp(pi_log[Qplus,2]);
+	real prior_encounter_rate_phi = n[Qplus,1];
+    real prior_catchability_phi   = n[Qplus,2];
+	
     // CATCHES
     {
         real biomass_hat;
