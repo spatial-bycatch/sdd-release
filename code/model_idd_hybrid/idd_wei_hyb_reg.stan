@@ -236,7 +236,7 @@ parameters {
 	
 	// catchability parameters
 	real<upper=0> pi_log[Qplus,2];
-    real<lower=0,upper=100> n[Qplus, 2];
+    real<lower=0> n[Qplus, 2];
     
 	// observation error
 	// per year
@@ -306,9 +306,13 @@ transformed parameters {
 }
 model {
 	
-    // catchability parameter
     for (i in 1:Qplus) {
+	
+		// catchability parameter
         pi_log[i,] ~ log_beta(1.0, 1.0);
+		
+		// shape
+		n[i,] ~ gamma(2, 2);
     }
     
     // binomial model
