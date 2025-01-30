@@ -5,3 +5,5 @@ pi_init.csv
 *.png
 *.tex
 fit.rda
+results/res_summary_idd.rda
+results/res_summary_sdd.rda
