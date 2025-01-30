@@ -1,15 +1,15 @@
 
 
 library(plyr)
-library(sdd)
 library(ggplot2)
-library(posterior)
 library(tidyr)
 library(dplyr)
 
 wd <- getwd()
 
 spps <- c("SSI", "BBE", "ETB", "SND")
+
+source("posterior.R")
 
 #############
 # SDD MODEL #
@@ -68,6 +68,9 @@ for (i in spps) {
         
         nit <- dim(x[["catchability"]])[1]
         
+        dat$model  <- "SDD"
+        dat$method <- "SURVEY"
+        
         mae_1    <- function(x, y) mean(abs(x - y))
         mae_2    <- function(x, y) apply(abs(x - y), 2, mean)
         pvalue_1 <- function(x, y) { p <- y > x; p[y == x] <- 0.5; mean(p)}
@@ -105,6 +108,9 @@ for (i in spps) {
         dimnames(x[["cpue_sim"]])   <- list(iter = 1:nit, cell = X.dimnames$grid)
         dimnames(x[["pnzero_emp"]]) <- list(iter = 1:nit, cell = X.dimnames$grid)
         dimnames(x[["pnzero_sim"]]) <- list(iter = 1:nit, cell = X.dimnames$grid)
+        
+        # sampling
+        aa[[i]][[basename(j)]][["sample_size"]] <- ddply(dat, .(grid, model, method), summarise, effort_n = sum(effort), effort_area = sum(sweptArea))
         
         # results
         aa[[i]][[basename(j)]][["catchability"]]      <- data.frame(iter = 1:nit, model = "SDD", label = mdl_label, method = "SURVEY", value = x[["catchability"]])
@@ -202,6 +208,10 @@ for (i in spps) {
         id_survey <- which(X.dimnames$group == "SURVEY")
         id_comm   <- which(X.dimnames$group != "SURVEY")
         
+        dat$model  <- "IDD"
+        dat$method <- "SURVEY"
+        dat$method[dat$group == id_comm] <- "COMM"
+        
         mae_1    <- function(x, y) mean(abs(x - y))
         mae_2    <- function(x, y) apply(abs(x - y), 2, mean)
         pvalue_1 <- function(x, y) { p <- y > x; p[y == x] <- 0.5; mean(p)}
@@ -239,6 +249,9 @@ for (i in spps) {
         dimnames(x[["cpue_sim"]])   <- list(iter = 1:nit, group = X.dimnames$group, cell = X.dimnames$grid)
         dimnames(x[["pnzero_emp"]]) <- list(iter = 1:nit, group = X.dimnames$group, cell = X.dimnames$grid)
         dimnames(x[["pnzero_sim"]]) <- list(iter = 1:nit, group = X.dimnames$group, cell = X.dimnames$grid)
+        
+        # sampling
+        bb[[i]][[basename(j)]][["sample_size"]] <- ddply(dat, .(grid, model, method), summarise, effort_n = sum(effort), effort_area = sum(sweptArea))
         
         # results
         bb[[i]][[basename(j)]][["catchability"]]      <- rbind(data.frame(iter = 1:nit, model = "IDD", label = mdl_label, value = x[["catchability"]][,id_survey], method = "SURVEY"), data.frame(iter = 1:nit, model = "IDD", label = mdl_label, value = x[["catchability"]][,id_comm], method = "COMM"))

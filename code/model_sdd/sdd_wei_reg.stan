@@ -348,7 +348,8 @@ generated quantities {
     
     vector[G] catch_hat_predict = rep_vector(0.0, G);
    
-    real catchability = exp(pi_log[1]);
+    real catchability     = exp(pi_log[1]);
+	real catchability_phi = n[1];
 	
     // CATCHES
     {

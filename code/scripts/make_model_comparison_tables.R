@@ -86,7 +86,7 @@ lapply(tab, function(x) {
       x <- x %>% select(-species)
       
       x %>% kable(format = 'latex',
-                  col.names = c('Model', 'Label', '$\\pi_{\\,\\mathrm{SURVEY}}$', '$\\pi_{\\,\\mathrm{COMM}}$', '$\\E{d_k}$', '$\\pi_{\\,\\mathrm{SURVEY}}$', '$\\pi_{\\,\\mathrm{COMM}}$', '$\\E{d_k}$'),
+                  col.names = c('Model', 'Label', '$\\pi_{\\,\\mathrm{SURVEY}}$', '$\\pi_{\\,\\mathrm{COMM.}}$', '$\\E{d_l}$', '$\\pi_{\\,\\mathrm{SURVEY}}$', '$\\pi_{\\,\\mathrm{COMM.}}$', '$\\E{d_l}$'),
                   align = c('l', 'l', 'r', 'r', 'r', 'r', 'r', 'r'),
                   label = paste0('rhat_', y),
                   caption = paste0('Convergence diagnostics per model for ', '\\species{', y, '}. Where poor convergence is indicated by $\\hat{R}$, these are shown in red. Where sampling is more efficient, indicated by a higher $N_{eff} / N$, cells are shaded a darker blue.'),

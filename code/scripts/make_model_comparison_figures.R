@@ -3,7 +3,6 @@
 library(ggplot2)
 library(plyr)
 library(dplyr)
-library(sdd)
 
 wd <- getwd()
 
@@ -22,7 +21,6 @@ load(file = file.path("../../results/res_summary_sdd.rda"))
 load(file = file.path("../../results/res_summary_idd.rda"))
 
 # ASSIGN
-
 aa <- res_summary_sdd
 bb <- res_summary_idd
 
@@ -49,9 +47,11 @@ for (spp in spps) {
     
 }
 
-dfr_final <- dfr %>% filter(label == "E4") %>% filter(species %in% c("SSI", "BBE", "ETB", "SND"))
+dfr_final_1 <- dfr %>% filter(label == "E4" & model == "Survey only model") %>% filter(species %in% c("SSI", "BBE", "ETB", "SND"))
+dfr_final_2 <- dfr %>% filter(label == "W4" & model == "Integrated model")  %>% filter(species %in% c("SSI", "BBE", "ETB", "SND"))
+dfr_final   <- bind_rows(dfr_final_1, dfr_final_2)
 
-gg <- ggplot(dfr_final) + 
+gg <- ggplot(filter(dfr_final, value_emp > 0)) + 
     geom_point(aes(x = value_emp, y = value_hat), alpha = 0.4) +
     scale_y_log10() + scale_x_log10() +
     facet_grid(species~method+model) + 
@@ -84,7 +84,9 @@ for (spp in spps) {
     
 }
 
-dfr_final <- dfr %>% filter(label == "E4") %>% filter(species %in% c("SSI", "BBE", "ETB", "SND"))
+dfr_final_1 <- dfr %>% filter(label == "E4" & model == "Survey only model") %>% filter(species %in% c("SSI", "BBE", "ETB", "SND"))
+dfr_final_2 <- dfr %>% filter(label == "W4" & model == "Integrated model")  %>% filter(species %in% c("SSI", "BBE", "ETB", "SND"))
+dfr_final   <- bind_rows(dfr_final_1, dfr_final_2)
 
 gg <- ggplot(dfr_final) + 
     geom_point(aes(x = value_emp, y = value_sim), alpha = 0.4) +
@@ -211,7 +213,9 @@ for (spp in spps) {
 }
 
 # RESULTS FIGURE 
-dfr_final <- dfr %>% filter(label == "E4") %>% filter(species %in% c("SSI", "BBE", "ETB", "SND"))
+dfr_final_1 <- dfr %>% filter(label == "E4" & model == "Survey only model") %>% filter(species %in% c("SSI", "BBE", "ETB", "SND"))
+dfr_final_2 <- dfr %>% filter(label == "W4" & model == "Integrated model")  %>% filter(species %in% c("SSI", "BBE", "ETB", "SND"))
+dfr_final   <- bind_rows(dfr_final_1, dfr_final_2)
 
 gg <- ggplot(filter(dfr_final, cpue_emp > 0 & cpue_sim_hat > 0)) + 
     geom_point(aes(x = density_bin, y = cpue_emp), col = 'darkblue') + 
@@ -230,4 +234,6 @@ gg <- ggplot(dfr_final) +
     facet_grid(species~method+model) + theme_bw() +
     labs(x = "Ordered grid cell", y = "Cumulative sum of the catch rates")
 ggsave(gg, file = file.path("../../figures", "fit_catch_rate_distribution_per_model_final.pdf"), height = 7)
+
+
 
