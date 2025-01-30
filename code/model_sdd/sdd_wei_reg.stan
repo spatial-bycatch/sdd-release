@@ -299,11 +299,11 @@ transformed parameters {
 model {
     
     // catchability parameter
-    pi_log[1] ~ log_beta(1.0, 1.0);
-    
-    // reference prior
-    pi_log[2] ~ log_beta(1.0, 1.0);
+	for (i in 1:2) {
+		pi_log[i] ~ log_beta(1.0, 1.0);
+	}
 	
+	// shape
 	n ~ gamma(2, 2);
     
     // binomial model
