@@ -1,6 +1,7 @@
 
-*.rda
+
 pi_init.csv
 *.pdf
 *.png
 *.tex
+fit.rda
