@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/878002821.svg)](https://doi.org/10.5281/zenodo.15781961)
+
 # Integrated estimation of the spatial population density surface using semi-continuous sampling data
 Charles Edwards, Nokuthaba Sibanda and Marie-Julie Roux
 
